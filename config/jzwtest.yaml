@@ -1,0 +1,23 @@
+# 示例配置文件 (config.yaml)
+jzw: "xiaos" # jzw 和 app、database、services同层
+
+app: #这加载出来就是字典
+  name: "MyApp"
+  version: 1.0
+  settings:
+    debug: ${DEBUG_MODE}
+    log_level: ${LOG_LEVEL}
+database:
+  main:
+    host: "db.example.com"
+    port: ${DB_PORT}
+    credentials:
+      username: ${DB_USER}
+      password: ${DB_PASS}
+  backup:
+    host: "backup.example.com"
+services: # 这加载出来就是 列表
+  - name: "ServiceA"
+    endpoint: ${SERVICE_A_URL}
+  - name: "ServiceB"
+    endpoint: ${SERVICE_B_URL}

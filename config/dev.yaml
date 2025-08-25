@@ -1,0 +1,35 @@
+# 开发环境配置
+environment: development
+
+# 继承基础配置
+extends: base.yaml
+
+# 开发环境特定配置
+application_name: "Haiven-Dev"
+knowledge_pack_path: ${KNOWLEDGE_PACK_PATH}
+enabled_providers: ${ENABLED_PROVIDERS}
+jira_service_url: "http://integration-sit.t-sy-in.earth.xcloud.lenovo.com/api/test/jira/issue"
+
+default_models:
+  chat: ${ENABLED_CHAT_MODEL}
+  vision: ${ENABLED_VISION_MODEL}
+  embeddings: ${ENABLED_EMBEDDINGS_MODEL}
+
+
+# 数据库配置
+database:
+  host: "10.196.155.66"
+  port: "5432"
+  db_name: "requirement_agent"
+  db_account: "a_appconnect"
+  db_password: "z:yMZF4CjkV6"
+
+# 提示词配置
+prompt_id:
+  judge_user_scenarios_prompt_id: 5 # 意图识别提示词
+  divide_user_story_prompt_id: 51  # 分解用户故事提示词
+  again_divide_user_story_prompt_id: 54 # 再次分解用户故事
+  summary_prompt_id: 9 # 总结用户query的系统提示词
+  update_user_story_prompt_id: 55 # 修改用户故事
+  system_prompt_id: 45  # 系统提示词
+  user_story_summary_prompt_id: 66

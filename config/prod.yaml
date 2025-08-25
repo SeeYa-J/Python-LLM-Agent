@@ -1,0 +1,24 @@
+# 生产环境配置
+environment: production
+
+# 继承基础配置
+extends: base.yaml
+
+# 生产环境特定配置
+application_name: "Haiven-Production"
+knowledge_pack_path: ${KNOWLEDGE_PACK_PATH}
+enabled_providers: ${ENABLED_PROVIDERS}
+
+default_models:
+  chat: ${ENABLED_CHAT_MODEL}
+  vision: ${ENABLED_VISION_MODEL}
+  embeddings: ${ENABLED_EMBEDDINGS_MODEL}
+
+
+# 数据库配置
+database:
+  host: 10.196.155.66
+  port: 5432
+  db_name: requirement_agent
+  db_account: a_appconnect
+  db_password: z:yMZF4CjkV6
