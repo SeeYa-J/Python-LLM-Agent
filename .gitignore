@@ -1,0 +1,63 @@
+out/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+*.dll
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# IDEs and editors
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.pyproj
+*.user
+*.cache
+*.DS_Store
+*.env
+.VSCodeCounter
+
+# Environment variables
+.env
+env/
+venv/
+ENV/
+
+# Other
+*.log
+*.bak
+*.tmp
+*.swp
+*.sql
+*.pickle
+
+# Ignore Poetry-specific files
+.venv/
+
+# Ignore operating system specific files
+.DS_Store
+Thumbs.db
+.chroma
+db
+.cursor
+.github
+.precommit
+
+app/config.local.yaml
+tmp
+
+.coverage
+*.faiss
+*.pkl
+!app/tests/test_data/**/*.faiss
+!app/tests/test_data/**/*.pkl

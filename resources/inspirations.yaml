@@ -1,0 +1,141 @@
+inspirations:
+  - id: retrospective-facilitator
+    title: 获取关于回顾会议形式的建议，并帮助分析团队反馈模式
+    category: delivery
+    prompt_template: |
+      我需要帮助引导团队回顾会议。以下是我们团队和最近冲刺阶段的相关背景：
+
+      [请描述您的团队规模、冲刺周期长度，以及上个冲刺阶段中遇到的具体挑战或取得的成果]
+
+      我希望:
+      1. 针对当前情况，推荐几种有趣的回顾会议形式
+      2. 关键问题引导团队讨论
+      3. 促进建设性讨论的技巧
+      4. 反馈信息的高效收集与整理方法     标题: 将提交信息转换为结构化的用户友好型更新日志    标题: 将技术性变更转化为用户易懂的语言    标题: 帮助有效构建和组织信息    标题: 编写清晰一致的界面文案
+
+
+  - id: changelog-builder
+    title: 将提交信息转换为结构清晰、易于理解的更新日志
+    category: delivery
+    prompt_template: |
+      请根据以下提交信息帮我生成更新日志:
+
+      [在此粘贴您的提交信息]
+
+      请按以下分类整理:
+      1. 新功能
+      2. 优化改进
+      3. 缺陷修复
+      4. 重大变更
+
+  - id: technical-translator
+    title: 将技术性变更转化为用户友好的语言
+    category: communication
+    prompt_template: |
+      请帮我用通俗易懂的语言解释这些技术变更:
+
+      [在此描述技术变更内容]
+
+      需重点考虑:
+      1. 对用户体验的影响
+      2. 为用户带来的好处
+      3. 用户需要采取的任何操作
+
+  - id: information-architect
+    title: 帮助有效构建和组织信息
+    category: design
+    prompt_template: |
+      请帮我为以下内容设计信息架构:
+
+      [在此描述您的内容/功能]
+
+      需包含以下要素:
+      1. 主导航结构
+      2. 内容层级关系
+      3. 用户流程路径
+      4. 命名规范体系
+
+  - id: ui-copy-creator
+    title: 编写清晰统一的界面文案
+    category: content
+    prompt_template: |
+      请协助编写以下界面元素的文案:
+
+      [描述需要文案的UI元素]
+
+      具体要求:
+      1. 目标受众：[请注明]
+      2. 语言风格：[请注明]
+      3. 字数限制：[如有]
+      4. 核心传达信息：[请注明]
+
+  - id: copy-consistency-reviewer
+    title: 审查界面文案的一致性与清晰度
+    category: content
+    prompt_template: |
+      请审查以下界面文案的一致性：
+
+      [在此粘贴您的界面文案]
+
+      检查维度:
+      1. 术语使用一致性
+      2. 语言风格统一性
+      3. 语法与拼写规范
+      4. 表述清晰度与简洁性
+
+  - id: user-communication-improver
+    title: 提升用户沟通效能
+    category: communication
+    prompt_template: |
+      请协助优化以下用户沟通内容: 
+
+      [在此粘贴您当前的沟通文案]
+
+      优化目标:
+      1. 信息清晰度
+      2. 语气恰当性
+      3. 行动引导有效性
+      4. 用户共情体现
+
+  - id: incident-responder
+    title: 获取高效事件处置指南
+    category: operations
+    prompt_template: |
+      请协助处理以下突发事件：
+
+      [描述事件详情]
+
+      需支持事项：
+      1. 紧急处置措施
+      2. 信息通报策略
+      3. 问题排查步骤
+      4. 利益相关方管理
+
+  - id: incident-report-drafter
+    title: 编制完整事件报告
+    category: operations
+    prompt_template: |
+      请协助起草以下事件报告：
+
+      [描述事件详情]
+
+      需包含:
+      1. 事件时间轴
+      2. 根因分析
+      3. 影响范围评估
+      4. 整改措施
+      5. 经验总结
+
+  - id: user-flow-reviewer
+    title: 识别并改进用户流程中的摩擦点
+    category: design
+    prompt_template: |
+      审查以下用户流程的摩擦点：
+
+      [描述流程或上传流程图]
+
+      分析维度:
+      1. 用户旅程步骤
+      2. 潜在痛点
+      3. 认知负荷
+      4. 优化建议

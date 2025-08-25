@@ -1,0 +1,376 @@
+:root {
+  --color-flamingo: #f2617aff;
+  --color-light-gray: #edf1f3;
+  --color-dark-blue: #003d4f;
+  --color-sapphire: #47a1ad;
+
+  --checkbox-background-color: #edf1f3;
+  --checkbox-background-color-selected: var(--color-flamingo);
+
+  --link-text-color: var(--color-flamingo);
+  --link-text-color-active: var(--color-flamingo);
+  --link-text-color-hover: var(--color-flamingo);
+  --link-text-color-visited: var(--color-flamingo);
+}
+
+.model-settings-service label .wrap {
+  font-size: 0.9em !important;
+  background-color: var(--checkbox-label-background-fill) !important;
+}
+
+.hint {
+  font-size: 0.8em !important;
+}
+
+.prompt-choice .prompt-help {
+  padding: 0.3em;
+  background-color: var(--background-fill-secondary);
+}
+
+.user-help-col {
+  background-color: var(--color-light-gray);
+  font-size: 0.9em !important;
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+.message {
+  font-size: var(--body-text-size) !important;
+}
+
+.haiven-content {
+  padding: 0 3em;
+
+  @media (prefers-color-scheme: dark) {
+    background-color: var(--color-dark-blue);
+  }
+
+  @media (prefers-color-scheme: light) {
+    background-color: white;
+  }
+
+  border: none;
+}
+
+.haiven-tabs-container {
+  @media (prefers-color-scheme: dark) {
+    background-color: var(--color-dark-blue);
+  }
+
+  @media (prefers-color-scheme: light) {
+    background-color: white;
+  }
+
+  padding-top: 1em;
+}
+
+.haiven-settings {
+  border: 1px solid var(--color-light-gray);
+}
+
+/* Header styling: One row */
+/* .header-title h1 {
+  font-family: Bitter, "Noto Serif SC", serif;
+  color: white !important;
+  display: inline;
+}
+.header-title h2 {
+  display: inline;
+  color: var(--color-sapphire) !important;
+  margin-top: -0.8em;
+  margin-left: 0.5em;
+  font-size: 1em;
+  text-transform: lowercase;
+} */
+
+/* Header styling: Two rows */
+.header-title h1 {
+  font-family: Bitter, "Noto Serif SC", serif;
+  color: white !important;
+}
+
+.header-title h2 {
+  color: var(--color-sapphire) !important;
+  margin-top: -0.8em;
+  font-size: 1em;
+}
+
+.navigation {
+  display: flex;
+  flex-direction: row;
+}
+
+.navigation .item {
+  display: flex;
+}
+
+.navigation .item-link {
+  background-color: #00000000;
+  font-weight: bold;
+  color: white !important;
+  text-decoration: none !important;
+  padding: 0;
+  margin-right: 1em;
+}
+
+.navigation .item-link.selected {
+  color: var(--color-flamingo) !important;
+}
+
+.navigation .item-link.knowledge {
+  color: var(--color-sapphire) !important;
+}
+
+.navigation .icon {
+  width: 1.5em;
+  float: left;
+  margin-right: 0.3em;
+}
+
+.documentation-tab img {
+  float: none;
+  width: 50em;
+}
+
+.about img {
+  float: none;
+  width: 50em;
+}
+
+.haiven-group {
+  border: 1px solid var(--color-light-gray) !important;
+}
+
+.haiven-group .primary {
+  border: 1em solid var(--background-fill-secondary) !important;
+}
+
+.haiven-group .secondary {
+  border: 1em solid var(--background-fill-secondary) !important;
+}
+
+.haiven-group-title {
+  padding: 0.3em;
+  background-color: var(--background-fill-secondary);
+  color: var(--block-title-text-color) !important;
+}
+
+.haiven-group-title h2 {
+  color: var(--block-title-text-color) !important;
+  margin: 0;
+}
+
+/* When prose class is added, chatbot is displayed with bigger font size for some reason
+  It is unclear when this class is added or not, sometimes it happens, sometimes it doesn't */
+.chatbot.prose {
+  font-size: var(--body-text-size) !important;
+}
+
+.knowledge-advice .knowledge-label label span {
+  background-image: url("/static/icon_knowledge_blue.png");
+  background-repeat: no-repeat;
+  background-position: left center;
+  padding-left: 2em;
+}
+
+.prompt-help.knowledge.prose {
+  margin-top: 0.5em;
+  color: var(--color-sapphire);
+
+  background-image: url("/static/icon_knowledge_blue.png");
+  background-repeat: no-repeat;
+  background-position: left center;
+  padding-left: 2em;
+}
+
+.knowledge-button {
+  background-color: var(--color-sapphire);
+  color: white;
+}
+
+.knowledge-column {
+  padding: 0 0.5em;
+  padding-bottom: 1em;
+}
+
+.knowledge-column div {
+  padding-bottom: 0.5em;
+}
+
+.knowledge-context-list {
+  border: 1px solid var(--color-light-gray) !important;
+}
+
+.knowledge-document-info {
+  margin-top: 1em;
+  border-top: 1px solid var(--color-light-gray);
+  padding-top: 1em;
+}
+
+.copyright_text {
+  text-align: center;
+  background-color: white !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .model-settings {
+    background-color: var(--block-background-fill) !important;
+  }
+
+  .model-settings label {
+    color: black !important;
+  }
+
+  .user-help-col {
+    background-color: var(--block-background-fill) !important;
+  }
+
+  .primary {
+    background-color: var(--color-flamingo) !important;
+  }
+
+  .haiven-content {
+    background-color: transparent;
+  }
+
+  .haiven-tabs-container {
+    background-color: rgb(31, 41, 55);
+  }
+
+  .haiven-group {
+    border: 1px solid var(--color-dark-blue) !important;
+  }
+
+  .tabitem {
+    background-color: var(--background-fill-secondary);
+  }
+
+  .knowledge-context-list {
+    border: 1px solid var(--color-dark-blue) !important;
+  }
+
+  .copyright_text {
+    background-color: var(--background-fill-primary) !important;
+  }
+
+  .tabs .selected {
+    background-color: var(--background-fill-secondary) !important;
+  }
+
+  .message-row.bubble.bot-row {
+    background-color: var(--block-background-fill) !important;
+    ;
+  }
+
+
+  .message-row.bubble.bot-row {
+    padding: 8px;
+    border: 1px solid var(--border-color-accent-subdued) !important;
+  }
+
+  .message-row.bubble.bot-row div {
+    border: none;
+    background-color: transparent;
+  }
+
+}
+
+.show-api {
+  display: none !important;
+}
+
+.show-api+div {
+  display: none !important;
+}
+
+
+
+/* HEADER */
+.header {
+  background-color: var(--color-dark-blue);
+  height: 65px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  color: white;
+}
+
+.left-section {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 20px;
+  margin-right: 10px;
+}
+
+.separator {
+  width: 1px;
+  height: 24px;
+  background-color: white;
+  margin: 0 15px;
+}
+
+.title {
+  color: white !important;
+  font-size: 16px;
+}
+
+.mode-switch {
+  display: flex;
+  align-items: center;
+}
+
+.mode-switch span {
+  color: white !important;
+  margin-right: 10px;
+}
+
+.mode-button {
+  border: none;
+  padding: 5px 10px !important;
+}
+
+.mode-selected {
+  background-color: white;
+  color: black;
+  cursor: none;
+}
+
+.mode-other {
+  background-color: #2d2d2d;
+  color: grey;
+  cursor: pointer;
+}
+
+.mode-other a {
+  text-decoration: none !important;
+  color: grey;
+}
+
+.mode-right {
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+.mode-left {
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+}
+
+.message-row.bubble.bot-row {
+  padding: 8px;
+  border: 1px solid var(--color-light-gray)
+}
+
+.message-row.bubble.bot-row div {
+  border: none;
+  background-color: transparent;
+}

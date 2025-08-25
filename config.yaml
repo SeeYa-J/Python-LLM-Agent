@@ -1,0 +1,218 @@
+application_name: ${TEAMAI_APPLICATION_NAME}
+
+knowledge_pack_path: ${KNOWLEDGE_PACK_PATH}
+
+enabled_providers: ${ENABLED_PROVIDERS}
+
+default_models:
+  chat: ${ENABLED_CHAT_MODEL}
+  vision: ${ENABLED_VISION_MODEL}
+  embeddings: ${ENABLED_EMBEDDINGS_MODEL}
+
+models:
+  - id: AiForce
+    name: Provided By AiForce
+    provider: openai
+    features:
+      - text-generation
+      - stop-sequence
+    config:
+      model_name: Deepseek-R1-32b
+      agent:
+        agent-supply-chain:
+          api_key: M/+jhoQ6UXZxU86ZTFxaygoN1ZJtKXXG
+          secret_key: JLpygYJYrKEZkGzC1uHIusKj/CJ5AXII
+          service_id:
+            invoice_ocr: "1871080863769427968"
+            code_reader: "1901519946683047936"
+            doc_editor: "1907617846361554944"
+            shenhaotest: "1914220940003061760"
+            baosongtest: "1849753300972187648"
+            TEST: "1849753300972187648"
+          token_url: https://aiforceplatformfeuat.t-sy-in.earth.xcloud.lenovo.com/aiforceplatformapi/openapi/oauth/token/get
+          llm_url: https://aiforceplatformfeuat.t-sy-in.earth.xcloud.lenovo.com/aiforceplatformapi/openapi/llm/debugSse
+        agent-easy:
+          api_key: I5ILDjx/DOWl8a4DZVBwLboXNb+v9vie
+          secret_key: ZepPNfnzJkwltnhY74u64flnfvj8Z3NA
+          service_id:
+            tqwen-32: "1940671410267435008"
+            qwen-14: "1940975383946919936"
+            optimus2: "1942161436139814912"
+          token_url: https://aiforceplatformfeuat.t-sy-in.earth.xcloud.lenovo.com/aiforceplatformapi/openapi/oauth/token/get
+          llm_url: https://aiforceplatformfeuat.t-sy-in.earth.xcloud.lenovo.com/aiforceplatformapi/openapi/llm/debugSse
+  - id: azure-gpt35
+    name: GPT-3.5 on Azure
+    provider: Azure
+    features:
+      - text-generation
+      - stop-sequence
+    config:
+      azure_endpoint: ${AZURE_OPENAI_API_BASE}
+      api_version: ${AZURE_OPENAI_API_VERSION}
+      azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_GPT35}
+      api_key: ${AZURE_OPENAI_API_KEY}
+
+  - id: azure-gpt-4o
+    name: GPT-4o on Azure
+    provider: Azure
+    features:
+      - image-to-text
+      - text-generation
+      - stop-sequence
+    config:
+      azure_endpoint: ${AZURE_OPENAI_API_BASE}
+      api_version: ${AZURE_OPENAI_API_VERSION}
+      azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_GPT4o}
+      api_key: ${AZURE_OPENAI_API_KEY}
+
+  - id: gemini-2.0-flash
+    name: Gemini 2.0 Flash
+    provider: GCP
+    features:
+      - text-generation
+      - image-to-text
+    config:
+      model: gemini-2.0-flash
+
+  - id: aws-claude-sonnet-3.5
+    name: Claude-Sonnet-3.5 on AWS Bedrock
+    provider: AWS
+    features:
+      - text-generation
+      - stop-sequence
+      - image-to-text
+    config:
+      model_id: us.anthropic.claude-3-5-sonnet-20241022-v2:0
+      anthropic_version: bedrock-2023-05-31
+      aws_region_name: ${AWS_BEDROCK_REGION}
+      aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+      aws_access_key_id: ${AWS_ACCESS_KEY_ID}
+
+  - id: aws-claude-sonnet-3.7
+    name: Claude-Sonnet-3.7 on AWS Bedrock
+    provider: AWS
+    features:
+      - text-generation
+      - stop-sequence
+      - image-to-text
+    config:
+      model_id: us.anthropic.claude-3-7-sonnet-20250219-v1:0
+      aws_region_name: ${AWS_BEDROCK_REGION}
+      aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+      aws_access_key_id: ${AWS_ACCESS_KEY_ID}
+
+  - id: anthropic-claude-3.7
+    name: Claude-Sonnet-3.7 on Anthropic
+    provider: Anthropic
+    features:
+      - text-generation
+      - stop-sequence
+      - image-to-text
+    config:
+      model_id: claude-3-7-sonnet-latest
+      api_key: ${ANTHROPIC_API_KEY}
+
+  - id: gpt-4o-mini
+    name: GPT-4o-mini on OpenAI
+    provider: OPENAI
+    features:
+      - text-generation
+      - stop-sequence
+    config:
+      model_name: gpt-4o-mini
+      api_key: ${OPENAI_API_KEY}
+      base_url: ${OPENAI_BASE_URL}
+
+  - id: openai-gpt-4o
+    name: GPT-4o on OpenAI
+    provider: OPENAI
+    features:
+      - text-generation
+      - stop-sequence
+      - image-to-text
+    config:
+      model_name: gpt-4o
+      api_key: ${OPENAI_API_KEY}
+      base_url: ${OPENAI_BASE_URL}
+
+  - id: ollama-local-llama2
+    name: Local - Ollama llama2
+    provider: ollama
+    features:
+      - text-generation
+    config:
+      base_url: ${OLLAMA_HOST}
+      model: llama2
+
+  - id: ollama-local-llama3
+    name: Local - Ollama llama3
+    provider: ollama
+    features:
+      - text-generation
+    config:
+      base_url: ${OLLAMA_HOST}
+      model: llama3:8b
+
+  - id: ollama-local-mistral
+    name: Local - Ollama Mistral
+    provider: ollama
+    features:
+      - text-generation
+    config:
+      base_url: ${OLLAMA_HOST}
+      model: mistral
+
+  - id: ollama-local-llava
+    name: Local - Ollama Llava
+    provider: ollama
+    features:
+      - image-to-text
+    config:
+      base_url: ${OLLAMA_HOST}
+      model: llava:7b
+
+embeddings:
+  - id: text-embedding-ada-002
+    name: Text Embedding Ada 002 on Azure
+    provider: azure
+    config:
+      azure_endpoint: ${AZURE_OPENAI_API_BASE}
+      api_version: ${AZURE_OPENAI_API_VERSION_EMBEDDINGS}
+      azure_deployment: ${AZURE_OPENAI_DEPLOYMENT_NAME_EMBEDDINGS}
+      api_key: ${AZURE_OPENAI_API_KEY}
+
+  - id: open-ai-text-embedding-ada-002
+    name: Text Embedding Ada v2 on OpenAI
+    provider: OpenAI
+    config:
+      model: text-embedding-ada-002
+      api_key: ${OPENAI_API_KEY}
+      base_url: ${OPENAI_BASE_URL}
+
+  - id: amazon.titan-text-express-v1
+    name: Titan text Embedding on AWS
+    provider: AWS
+    config:
+      aws_region: us-east-1
+
+  - id: ollama
+    name: Ollama Embeddings (local)
+    provider: ollama
+    config:
+      base_url: ${OLLAMA_HOST}
+      model: llama2
+
+  - id: ollama-mxbai-embed-large
+    name: Ollama Embeddings mxbai-embed-large (local)
+    provider: ollama
+    config:
+      base_url: ${OLLAMA_HOST}
+      model: mxbai-embed-large
+
+  - id: ollama-nomic-embed-text
+    name: Ollama Embeddings nomic-embed-text (local)
+    provider: ollama
+    config:
+      base_url: ${OLLAMA_HOST}
+      model: nomic-embed-text
+

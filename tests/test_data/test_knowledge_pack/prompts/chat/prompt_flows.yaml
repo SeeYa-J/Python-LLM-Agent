@@ -1,0 +1,10 @@
+- firstStep:
+    identifier: uuid-1
+  followUps:
+    - identifier: uuid-2
+    - identifier: uuid-3
+- firstStep:
+    identifier: uuid-2
+  followUps:
+    - identifier: doesnt-exist
+    - identifier: uuid-3
