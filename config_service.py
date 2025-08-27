@@ -5,6 +5,7 @@ from typing import List
 
 import yaml
 from dotenv import load_dotenv
+from urllib.parse import quote_plus
 # from knowledge.pack import KnowledgePackError
 # from llms.model_config import ModelConfig
 # from llms.default_models import DefaultModels
@@ -12,22 +13,17 @@ from dotenv import load_dotenv
 from sqlmodel import create_engine
 import re
 
-'''
-_load_yaml ：加载yaml文件，从.env中获取变量填充 yaml
-_load_yaml_with_environment：加载yaml文件 及其 父yaml，调用_load_yaml进行填充
-'''
+
 class ConfigService:
     def __init__(self, environment: str = None):
-        # 如果没有指定environment环境，从环境变量获取
+        # 如果没有指定环境，从环境变量获取
         if environment is None:
-            # 从环境变量中获取 HAIVEN_ENV的值，无则返回 dev
             environment = os.getenv('HAIVEN_ENV', 'dev')
 
         self.environment = environment
         self.data = self._load_yaml_with_environment(environment)
-        # 加载数据库
         db_config = self.data['database']
-        db_config_str = f"postgresql://{db_config['db_account']}:{db_config['db_password']}@{db_config['host']}:{db_config['port']}/{db_config['db_name']}"
+        db_config_str = f"postgresql://{db_config['db_account']}:{quote_plus(db_config['db_password'])}@{db_config['host']}:{db_config['port']}/{db_config['db_name']}"
         self.db_engine = create_engine(db_config_str)
 
     # def load_embedding_model(self) -> EmbeddingModel:
@@ -235,7 +231,7 @@ class ConfigService:
     def _load_yaml(self, path: str) -> dict:
         """
         Load YAML data from a config file.
-        加载Yaml，保留时间戳为字符串，并用.env填充占位符
+
         Args:
             path (str): The path to the YAML file.
 
@@ -247,7 +243,6 @@ class ConfigService:
 
         data = None
 
-        # 使用自定义构造器_string_constructor，禁用了默认YAML时间戳到datetime对象的自动转换
         yaml.SafeLoader.add_constructor(
             "tag:yaml.org,2002:timestamp", ConfigService._string_constructor
         )
@@ -255,7 +250,6 @@ class ConfigService:
         with open(path, "r", encoding="utf8") as file:
             try:
                 data = yaml.load(file, Loader=yaml.SafeLoader)
-                # data就是yaml文件解析出来的dict
             except yaml.YAMLError as exc:
                 print(exc)
 
@@ -264,9 +258,10 @@ class ConfigService:
     def _load_yaml_with_environment(self, environment: str):
         """
         加载环境特定的配置文件
-        _load
+
         Args:
             environment (str): 环境名称 (dev/test/prod)
+
         Returns:
             dict: 合并后的配置数据
         """
@@ -281,7 +276,7 @@ class ConfigService:
             base_config_path = f"config/{env_data['extends']}"
             if os.path.exists(base_config_path):
                 base_data = self._load_yaml(base_config_path)
-                # 合并yaml及其父yaml配置，环境配置覆盖基础配置
+                # 合并配置，环境配置覆盖基础配置
                 merged_data = self._merge_configs(base_data, env_data)
                 return merged_data
         return env_data
@@ -316,10 +311,10 @@ class ConfigService:
     def _string_constructor(loader, node):
         """
         Custom constructor for handling YAML strings.
-        直接提取节点的原始字符串值
+
         Args:
-            loader: The YAML loader.YAML解析器实例
-            node: The YAML node.YAML文档中代表时间戳的节点。
+            loader: The YAML loader.
+            node: The YAML node.
 
         Returns:
             str: The constructed string.
@@ -344,17 +339,13 @@ class ConfigService:
 
 
 def _resolve_config_values(config: dict[str, str]):
-    '''
-    input：yaml.load文件
-    outPut：根据本地环境，填充好的input
-    '''
-    load_dotenv() # 加载.env文件中的环境变量
+    load_dotenv()
     for key, value in config.items():
-        if isinstance(value, dict): # 处理子配置
+        if isinstance(value, dict):
             _resolve_config_values(value)
-        elif isinstance(value, list): #处理列表元素
+        elif isinstance(value, list):
             _resolve_config_list_values(config, key, value)
-        else: #处理基本元素
+        else:
             config[key] = _replace_by_env_var(config[key])
             if _is_comma_separated_list(config[key]):
                 config[key] = config[key].split(",")
@@ -385,12 +376,10 @@ def _replace_by_env_var(value):
     if not isinstance(value, str):
         return value
 
-    # 使用 regex 查找所有 ${ENV_VAR} 模式，并替换为其值
+    # Use regex to find all ${ENV_VAR} patterns and replace them with their values
     def replace_env_var(match):
-        env_variable = match.group(1) # match.group(1)获取 VAR_NAME,group(0)是${VAR_NAME}
+        env_variable = match.group(1)
         return os.environ.get(env_variable, "")
 
-    # 使用正则表达式r"\${([^}]+)}"来查找字符串中所有的${VAR_NAME}形式的占位符，并对每个匹配调用
-    # re.sub(pattern：表示正则中的模式字符串,repl：表示要替换的字符串(可是函数），string：要被处理的原始字符串；
-    # \$ 转义$ , ([^}]+) 匹配1个或多个非}字符
+    # Replace all occurrences of ${ENV_VAR} with their values
     return re.sub(r"\${([^}]+)}", replace_env_var, value)

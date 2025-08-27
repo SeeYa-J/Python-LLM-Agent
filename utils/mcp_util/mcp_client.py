@@ -13,14 +13,13 @@ from config_service import ConfigService
 
 
 class MCPClient:
-    def __init__(self, itcode: str):
-        self.itcode = itcode
+    def __init__(self):
         config_service = ConfigService()
         self.user_dao = BizUserDAO(config_service.db_engine)
         self.session: Optional[ClientSession] = None
         self.exit_stack = AsyncExitStack()
         self.mcp_base_url = os.getenv("MCP_BASE_URL","https://apihub-test.lenovo.com/sit/v1/services/mcp-jira")  # Read MCP Base URL
-        self.mcp_jira_token = self.user_dao.find_jira_token_by_itcode(self.itcode)
+        self.mcp_jira_token = self.user_dao.find_jira_token_by_itcode()
         self.maas_base_url = os.getenv("MAAS_BASE_URL","https://ai.ludp.lenovo.com/ics-apps/projects/115/qwen3-dev/aiverse/endpoint/v1")
         self.openai_api_key = os.getenv("OPENAI_API_MCP_KEY","sk-G8sqcwdyefe16ZJrVD6U8Z")  # Read OpenAI API Key
         self.server_params_list = []

@@ -6,9 +6,11 @@
 # from llms.clients import ChatClientFactory
 # from llms.model_config import ModelConfig
 # from prompts.prompts_factory import PromptsFactory
+from utils.kmverse_util import KmverseUtil
 from rq_server import RqServer
 # from server import Server
 from config_service import ConfigService
+from utils.apih_util import ApihUtil
 # from disclaimer_and_guidelines import DisclaimerAndGuidelinesService
 from utils.dependency_injection import get_container
 
@@ -20,9 +22,11 @@ class App:
     #     return ImageDescriptionService(model)
 
     def __init__(self):
-        config_service = ConfigService() #初始化配置
-        # 注入ConfigService到容器
+        config_service = ConfigService()
         get_container().register_obj(key = ConfigService, value=config_service)
+        apih_util = ApihUtil(config_service.data['apih'])
+        kmverse_util = KmverseUtil(config_service.data['kmverse'], apih_util)
+        get_container().register_obj(key = KmverseUtil, value=kmverse_util)
 
         # knowledge_pack_path = config_service.load_knowledge_pack_path()
         # knowledge_manager = KnowledgeManager(config_service=config_service)
@@ -49,7 +53,7 @@ class App:
         #         disclaimer_and_guidelines,
         #     ),
         # ).create()
-        self.server = RqServer( #创建服务器
+        self.server = RqServer(
             config_service,
         ).create()
 

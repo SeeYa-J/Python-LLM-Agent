@@ -1,5 +1,5 @@
 # © 2024 Thoughtworks, Inc. | Licensed under the Apache License, Version 2.0  | See LICENSE.md file for permissions.
-from zoneinfo import ZoneInfo #时区的包
+from zoneinfo import ZoneInfo
 
 DISCLAIMER_PATH = "disclaimer/disclaimer_and_guidelines.md"
 
@@ -17,7 +17,7 @@ CSV_GENERATION_INFO = "正在生成csv文件，请稍后...\n\n"
 FILE_NOTE1 = "\n<file>"
 FILE_NOTE2 = "</file>"
 THINK_NOTE1 = "<think>"
-THINK_NOTE2 = "</think>" ## 结尾标识
+THINK_NOTE2 = "</think>"
 
 REQ_ROUTER = "/api/req"
 

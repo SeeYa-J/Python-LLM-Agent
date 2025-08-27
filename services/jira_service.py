@@ -31,8 +31,8 @@ class JiraService:
     config_service: ConfigService
 
     # region ===== 项目相关 =====
-    def create_project(self, data: dict, operator: str) -> BizJiraProject:
-        return self.project_dao.create(BizJiraProject(**data), operator)
+    def create_project(self, data: dict) -> BizJiraProject:
+        return self.project_dao.create(BizJiraProject(**data))
 
     def get_project_by_key(self, project_key: str) -> Optional[BizJiraProject]:
         return self.project_dao.find_by_project_key(project_key)
@@ -43,8 +43,8 @@ class JiraService:
     # endregion
 
     # region ===== 域相关 =====
-    def create_domain(self, data: dict, operator: str) -> BizDomain:
-        return self.domain_dao.create(BizDomain(**data), operator)
+    def create_domain(self, data: dict) -> BizDomain:
+        return self.domain_dao.create(BizDomain(**data))
 
     def get_domain_by_code(self, domain_code: str) -> Optional[BizDomain]:
         return self.domain_dao.find_by_domain_code(domain_code)
@@ -55,16 +55,15 @@ class JiraService:
     # endregion
 
     # region ===== Story 上传核心 =====
-    def find_stories_for_upload(
-            self,
-            itcode: str,
-            story_ids: List[int]
-    ) -> List[BizUserStory]:
-
-        if story_ids:
-            return self.story_dao.find_for_upload(story_ids)
-        else:
-            return []
+    # def find_stories_for_upload(
+    #         self,
+    #         story_ids: List[int]
+    # ) -> List[BizUserStory]:
+    #
+    #     if story_ids:
+    #         return self.story_dao.find_for_upload(story_ids)
+    #     else:
+    #         return []
 
     # def upload_stories_to_jira(self, itcode: str, story_ids: list[int], project_id: int) -> dict:
     #     """上传用户故事到 JIRA，返回操作结果"""
@@ -350,9 +349,9 @@ class JiraService:
     #     thread.daemon = True
     #     thread.start()
 
-    def upload_stories_to_jira_by_api(self, itcode, story_ids, project_key,jira_token):
+    def upload_stories_to_jira_by_api(self,story_ids, project_key,jira_token):
         # 查找待上传的 Stories
-        user_stories: List[BizUserStory] = self.story_dao.find_for_upload1(itcode, story_ids)
+        user_stories: List[BizUserStory] = self.story_dao.find_for_upload1(story_ids)
 
         if not user_stories:
             return {
@@ -379,7 +378,7 @@ class JiraService:
 
 
     def _sycnhronize_user_story_to_jira(self, project_key: str, user_story: BizUserStory, inner_req_data: dict):
-        inner_req_data["summary"] = user_story.jira_summary
+        inner_req_data["summary"] = f"[AI_Solution]{user_story.jira_summary}"
         inner_req_data["description"] = user_story.jira_description
         inner_req_data["plannedstart"] = user_story.jira_planned_start.strftime('%Y-%m-%dT%H:%M:%S.000+0800')
         inner_req_data["plannedend"] = user_story.jira_planned_end.strftime('%Y-%m-%dT%H:%M:%S.000+0800')
@@ -387,6 +386,8 @@ class JiraService:
         inner_req_data["solution"] = user_story.jira_solution
         inner_req_data["acceptance_criteria"] = user_story.jira_acceptance_criteria
         inner_req_data["labels"] = ["AI_Solution"]
+        if project_key == "SMTGETCS":
+            inner_req_data["sprint"] = 18502
 
         url = self.config_service.data["jira_service_url"]
         resp_data = requests.post(url, json=[inner_req_data])

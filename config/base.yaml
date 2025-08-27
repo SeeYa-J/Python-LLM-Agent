@@ -1,40 +1,37 @@
-application_name: ${TEAMAI_APPLICATION_NAME} # Agent名称
+application_name: ${TEAMAI_APPLICATION_NAME}
 
-knowledge_pack_path: ${KNOWLEDGE_PACK_PATH} #Agent的知识包路径
+knowledge_pack_path: ${KNOWLEDGE_PACK_PATH}
 
-enabled_providers: ${ENABLED_PROVIDERS} #AI服务提供商（如OpenAI、Azure等）
+enabled_providers: ${ENABLED_PROVIDERS}
 
-# 默认模型
 default_models:
-  chat: ${ENABLED_CHAT_MODEL} #聊天模型
-  vision: ${ENABLED_VISION_MODEL} #视觉模型
-  embeddings: ${ENABLED_EMBEDDINGS_MODEL} #编码模型
+  chat: ${ENABLED_CHAT_MODEL}
+  vision: ${ENABLED_VISION_MODEL}
+  embeddings: ${ENABLED_EMBEDDINGS_MODEL}
 
-# 调用各模型及相关参数
-models: #模型列表
+models:
   - id: AiForce
     name: Provided By AiForce
     provider: openai
-    features: # 模型功能
-      - text-generation #生成文本
-      - stop-sequence # 支持停止序列，用以控制文本生成
-    config: #模型配置
+    features:
+      - text-generation
+      - stop-sequence
+    config:
       model_name: Deepseek-R1-32b
-      agent: # 分为俩个 子代理 结构类似，但有不同的API密钥和服务ID。
-        agent-supply-chain: # Agent 详细版
+      agent:
+        agent-supply-chain:
           api_key: M/+jhoQ6UXZxU86ZTFxaygoN1ZJtKXXG
           secret_key: JLpygYJYrKEZkGzC1uHIusKj/CJ5AXII
-          service_id: # 服务ID
-            invoice_ocr: "1871080863769427968" # 发票识别
-            code_reader: "1901519946683047936" # 代码阅读
-            doc_editor: "1907617846361554944" # 文档编辑
-            shenhaotest: "1914220940003061760" # test
-            baosongtest: "1849753300972187648" # test
-            TEST: "1849753300972187648" # test
-          # URL用于获取访问令牌和调用模型API
+          service_id:
+            invoice_ocr: "1871080863769427968"
+            code_reader: "1901519946683047936"
+            doc_editor: "1907617846361554944"
+            shenhaotest: "1914220940003061760"
+            baosongtest: "1849753300972187648"
+            TEST: "1849753300972187648"
           token_url: https://aiforceplatformfeuat.t-sy-in.earth.xcloud.lenovo.com/aiforceplatformapi/openapi/oauth/token/get
           llm_url: https://aiforceplatformfeuat.t-sy-in.earth.xcloud.lenovo.com/aiforceplatformapi/openapi/llm/debugSse
-        agent-easy: # Agent 简单版
+        agent-easy:
           api_key: I5ILDjx/DOWl8a4DZVBwLboXNb+v9vie
           secret_key: ZepPNfnzJkwltnhY74u64flnfvj8Z3NA
           service_id:
@@ -174,7 +171,6 @@ models: #模型列表
       base_url: ${OLLAMA_HOST}
       model: llava:7b
 
-# 嵌入模型列表，参数和model类似
 embeddings:
   - id: text-embedding-ada-002
     name: Text Embedding Ada 002 on Azure

@@ -37,8 +37,7 @@ def create_server():
 
 def main():
     server = create_server()
-    #uvicorn.run(server, host="0.0.0.0", port=8080, forwarded_allow_ips="*")
-    uvicorn.run(server, host="localhost", port=8080, forwarded_allow_ips="*")
+    uvicorn.run(server, host="0.0.0.0", port=8080, forwarded_allow_ips="*")
 
 
 if __name__ == "__main__":

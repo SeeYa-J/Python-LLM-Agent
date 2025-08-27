@@ -4,13 +4,15 @@ import uuid
 from typing import List, Optional
 
 from config_service import ConfigService
+from dao.ai_aiforce_rag_doc_dao import AiAiforceRagDocDAO
 from dao.ai_prompt_dao import AiSystemPromptDAO
 from dao.chat_session_detail_dao import AiChatSessionDetailDAO
 from dao.chat_session_dao import AiChatSessionDAO
 from dao.document_dao import AiUploadDocumentDAO
 from llms.aiforce_util import AiforceUtil
 from models.business_entities import AiChatSession, AiChatSessionDetail, BizUserStory, AiAiforceRagDoc, AiUploadDocument
-from utils.dependency_injection import service
+from services.test_agent_service import TestAgentService
+from utils.dependency_injection import service, setup_dependency_injection
 import json
 
 @service
@@ -20,7 +22,9 @@ class ConversationService:
     document_dao: AiUploadDocumentDAO
     chat_session_dao:AiChatSessionDAO
     chat_session_detail_dao:AiChatSessionDetailDAO
+    rag_dao: AiAiforceRagDocDAO
     config_service:ConfigService
+    test_agent_service:TestAgentService
 
     def __init__(self):
         pass
@@ -29,18 +33,17 @@ class ConversationService:
                      session_id:  str,
                      project_key: str,
                      service_id: str,
-                     operator: str, #操作者
                      user_input: str,
-                     scenario: str=None, #场景描述，用于确定提示词
-                     card_uuid:str=None, #用户故事卡牌标识符
-                     document_id: str=None) -> tuple[AiChatSession, int, int]:
+                     # scenario: str=None,
+                     card_uuid:str=None,
+                     document_id: str=None) -> tuple[AiChatSession, int]:
         """初始化session_id以及历史会话表"""
-        if not session_id: ### 创建会话
-            chat_session_data = {} #session 相关数据 字典
-            session_id = str(uuid.uuid1())# uuid1 基于MAC地址，时间戳，随机数来生成唯一的uuid
+        if not session_id:
+            chat_session_data = {}
+            session_id = str(uuid.uuid1())
             chat_session_data["session_id"] = session_id
             chat_session_data["project_key"] = project_key
-            # 获取用户第一轮对话的总结内容，生成会话摘要
+            # 获取用户第一轮对话的总结内容
             summary = AiforceUtil.get_all_result(user_input, service_id, str(uuid.uuid1()))
             chat_session_data["summary"] = summary
             status = "进行中"
@@ -49,30 +52,31 @@ class ConversationService:
             if document_id:
                 chat_session_data["addition_info"] = document_id
             # 根据用户应用场景绑定提示词id
-            if scenario == '生成 user story':
-                prompt_id = self.config_service.data["prompt_id"]["divide_user_story_prompt_id"]
-            elif scenario == '修改 user story':
+            # if scenario == '生成 user story':
+            #     prompt_id = self.config_service.data["prompt_id"]["divide_user_story_prompt_id"]
+            # elif scenario == '修改 user story':
+            #     chat_session_data["user_story_uuid"] = card_uuid
+            #     prompt_id = self.config_service.data["prompt_id"]["again_divide_user_story_prompt_id"]
+            # else:
+            #     # 默认绑定
+            #     prompt_id = self.config_service.data["prompt_id"]["divide_user_story_prompt_id"]
+            if card_uuid is not None:
                 chat_session_data["user_story_uuid"] = card_uuid
-                prompt_id = self.config_service.data["prompt_id"]["again_divide_user_story_prompt_id"]
-            else:
-                # 默认绑定
-                prompt_id = self.config_service.data["prompt_id"]["divide_user_story_prompt_id"]
-            # 创建会话对象
             chat_session = AiChatSession(**chat_session_data)
             round_number = 1
-            return self.chat_session_dao.create(chat_session, operator),prompt_id,round_number
-        else: ### 修改会话
+            return self.chat_session_dao.create(chat_session),round_number
+        else:
             # 查询当前会话信息
             chat_session = self.chat_session_dao.query_chat_by_session_id(session_id)
             chat_session_details = self.chat_session_detail_dao.query_chat_detail_by_session_id(session_id)
             round_number = chat_session_details[0].round_number+1
             # 根据用户应用场景绑定提示词id
-            if scenario == '生成 user story' or scenario == '修改 user story':
-                prompt_id = self.config_service.data["prompt_id"]["again_divide_user_story_prompt_id"]
-            else:
-                # 默认绑定
-                prompt_id = self.config_service.data["prompt_id"]["divide_user_story_prompt_id"]
-            return chat_session,prompt_id,round_number
+            # if scenario == '生成 user story' or scenario == '修改 user story':
+            #     prompt_id = self.config_service.data["prompt_id"]["again_divide_user_story_prompt_id"]
+            # else:
+            #     # 默认绑定
+            #     prompt_id = self.config_service.data["prompt_id"]["divide_user_story_prompt_id"]
+            return chat_session,round_number
 
     def add_chat_session_detail(self,
                                 session_id: str,
@@ -81,7 +85,6 @@ class ConversationService:
                                 user_input: str,
                                 prompt_id: int,
                                 round_number:  int,
-                                operator: str,
                                 ref_document_id: str = None,
                                 reg_document_id: str = None)->AiChatSessionDetail:
         """创建对话详情数据"""
@@ -98,22 +101,20 @@ class ConversationService:
             chat_session_detail_data["reg_document_id"] = reg_document_id
         chat_session_detail_data["round_number"] = round_number
         chat_session_detail = AiChatSessionDetail(**chat_session_detail_data)
-        return self.chat_session_dao.create(chat_session_detail,operator)
+        return self.chat_session_dao.create(chat_session_detail)
 
-    def send_user_input_to_llm(self,service_id: str,session_id,user_input: str) -> str:
-        """发送用户输入至llm，返回llm完整回答"""
-        return AiforceUtil.get_all_result(user_input,service_id,session_id)
 
     def send_user_input_to_llm_v2(self,service_id: str,session_id,user_input: str):
         """发送用户输入至llm，返回llm流式回答"""
         for chunk in AiforceUtil.chat(user_input,service_id,session_id):
             yield chunk
 
-    def get_special_data(self,llm_ans: str) -> str:
+
+    def get_special_data_no_think(self,llm_ans:str)->str:
         """解析AI回答中特殊标记过的数据"""
         special_data = {'csv', 'ppt', 'json', 'mermaid'}
         for flag in special_data:
-            match = re.search(fr'</think>\s*```\s*{flag}', llm_ans)
+            match = re.search(fr'```\s*{flag}', llm_ans)
             if match:
                 # 获取匹配结束的位置
                 end_pos = match.end()
@@ -152,10 +153,10 @@ class ConversationService:
             result["user_stories"].append(data)
         return result
 
-    def get_user_chats(self,itcode: str,project_key: str)->List[AiChatSession]:
+    def get_user_chats(self,project_key: str)->List[AiChatSession]:
         """获取用户user_story_uuid为空的全部历史会话"""
         result = []
-        chatSessions = self.chat_session_dao.query_chat_by_creator_and_project_key(itcode, project_key)
+        chatSessions = self.chat_session_dao.query_chat_by_creator_and_project_key(project_key)
         for chatSession in chatSessions:
             if not chatSession.user_story_uuid or chatSession.user_story_uuid=="null":
                 result.append(chatSession)
@@ -174,7 +175,7 @@ class ConversationService:
             result["conversations"].append(data)
         return result
 
-    def get_user_chat_detail(self,session_id,itcode)->tuple[AiChatSession,List[AiChatSessionDetail]]:
+    def get_user_chat_detail(self,session_id)->tuple[AiChatSession,List[AiChatSessionDetail]]:
         """根据session_id以及itcode查询会话"""
         chat_session = self.chat_session_dao.query_chat_by_session_id(session_id)
         chat_details = self.chat_session_detail_dao.query_chat_detail_by_session_id(session_id)
@@ -229,7 +230,7 @@ class ConversationService:
                 result["mounted_files"].append(data)
         return result
 
-    def add_rag_doc(self,llm_ans:str,operator: str)->tuple[str,List[int]]:
+    def add_rag_doc(self,llm_ans:str)->tuple[str,List[int]]:
         """添加AIFORCE RAG文档，返回去除引用信息的回复以及document_id"""
         match = re.search(fr'<think>', llm_ans)
         rag_infos = []
@@ -250,7 +251,7 @@ class ConversationService:
             document_data["file_name"] = rag_info["referenceDoc"]
             document_data["file_path"] = rag_info["referencePath"]
             document = AiAiforceRagDoc(**document_data)
-            document_info = self.document_dao.create(document, operator)
+            document_info = self.rag_dao.create(document)
             documents_id.append(document_info.id)
         if len(documents_id)==0:
             documents_id = None
@@ -281,9 +282,8 @@ class ConversationService:
         file_size = os.path.getsize(full_path)
         return full_path,file_size
 
-    def add_upload_document(self,file_name: str, save_path: str
-                            , file_size: int, file_extension: str,
-                        file_context: str, operator: str)->AiUploadDocument:
+    def add_upload_document(self,file_name: str, save_path: str, file_size: int, file_extension: str,
+                        file_context: str)->AiUploadDocument:
         """保存用户上传文档至数据库"""
         document_data = {}
         document_data["document_name"] = os.path.splitext(file_name)[0]
@@ -291,8 +291,8 @@ class ConversationService:
         document_data["file_size"] = file_size
         document_data["file_type"] = file_extension[1:]
         document_data["file_context"] = file_context
-        document = AiUploadDocument(**document_data) # 数据库表对象document
-        return self.document_dao.create(document,operator)#上传数据库
+        document = AiUploadDocument(**document_data)
+        return self.document_dao.create(document)
 
     def get_upload_document_api_return_data(self,document:AiUploadDocument)->dict:
         """返回上传文档前端所需数据"""
@@ -308,32 +308,44 @@ class ConversationService:
             return document.file_context
         return ""
 
-    def set_document_conversation_id(self,document_id: str,conversation_id:int,operator: str)->bool:
+    def get_document_context_from_kmverse(self, document_ids: list[int], user_query: str) -> str:
+        """通过kmverse(zhichao的接口)查询文档文本内容"""
+        res_list = self.test_agent_service.get_document_context_from_kmverse(document_ids, user_query)
+        if not res_list or len(res_list) == 0:
+            return ""
+        res = ""
+        for each in res_list:
+            res += each["text"] + "\n"
+        return res
+
+    def set_document_conversation_id(self,document_id: str,conversation_id:int)->bool:
         """设置文档会话id"""
         if document_id is not None:
             document_id = int(document_id)
-            return self.document_dao.set_conversation_id(document_id,conversation_id,operator)
+            document = self.document_dao.get_by_id(document_id)
+            document.conversation_id = conversation_id
+            return self.document_dao.update(document)
         return True
 
-    def delete_conversation(self,conversation_id:id,operator:str)->bool:
+    def delete_conversation(self,conversation_id:id)->bool:
         """删除会话以及会话详情"""
         chat_session = self.chat_session_dao.get_by_id(entity_id=conversation_id)
         chat_session_id = chat_session.session_id
         # 软删除会话表
-        self.chat_session_dao.soft_delete(entity_id=conversation_id,operator=operator)
+        self.chat_session_dao.soft_delete(entity_id=conversation_id)
         chat_details = self.chat_session_detail_dao.query_chat_detail_by_session_id(chat_session_id)
         # 软删除会话详情表
         for chat_detail in chat_details:
-            self.chat_session_detail_dao.soft_delete(chat_detail.id,operator)
+            self.chat_session_detail_dao.soft_delete(chat_detail.id)
         return True
 
-    def get_init_conversation_return_data(self,conversation_id: int,session_id: str,round_number: int,prompt_id: int)->dict:
+    def get_init_conversation_return_data(self,conversation_id: int,session_id: str,round_number: int)->dict:
         """返回初始化会话前端所需数据"""
         data = {}
         data["conversation_id"] = conversation_id
         data["session_id"] = session_id
         data["round_number"] = round_number
-        data["prompt_id"] = prompt_id
+        # data["prompt_id"] = prompt_id
         return data
 
     def get_update_user_story_api_return_data(self,user_story_list: List[dict], ai_reply: str)->dict:

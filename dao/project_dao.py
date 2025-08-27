@@ -4,6 +4,7 @@ from sqlmodel import Session, select
 from dao.base_dao import BaseDAO
 from models.business_entities import BizJiraProject
 from utils.dependency_injection import repository
+from config.context import current_itcode
 
 
 @repository
@@ -31,21 +32,21 @@ class BizJiraProjectDAO(BaseDAO[BizJiraProject]):
             )
             return session.exec(statement).first()
 
-    def find_by_creator(self,creator: str)->List[BizJiraProject]:
+    def find_by_creator(self)->List[BizJiraProject]:
         """根据creator查询project"""
         with Session(self.db_engine) as session:
             statement = select(BizJiraProject).where(
-                BizJiraProject.create_by == creator,
+                BizJiraProject.create_by == current_itcode.get(),
                 BizJiraProject.is_deleted == False
             )
             return list(session.exec(statement).all())
 
-    def find_by_project_id_and_creator(self,creator: str,project_id: int)->BizJiraProject:
+    def find_by_project_id_and_creator(self,project_id: int)->BizJiraProject:
         """根据creator以及project_id查询project"""
         with Session(self.db_engine) as session:
             statement = select(BizJiraProject).where(
                 BizJiraProject.id == project_id,
-                BizJiraProject.create_by == creator,
+                BizJiraProject.create_by == current_itcode.get(),
                 BizJiraProject.is_deleted == False
             )
             return session.exec(statement).first()

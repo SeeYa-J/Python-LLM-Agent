@@ -16,21 +16,20 @@ class BizUserStoryDAO(BaseDAO[BizUserStory]):
     def __init__(self, db_engine):
         super().__init__(db_engine, BizUserStory)
 
-    def find_for_upload(
-            self,
-            story_ids: List[int]
-    ) -> List[BizUserStory]:
-        """
-        第二步：根据 story_ids 直接获取完整的用户故事对象
-        前面已经过滤了所有条件，这里直接根据ID获取即可
-        """
-        with Session(self.db_engine) as session:
-            stmt = select(BizUserStory).where(BizUserStory.id.in_(story_ids))
-            return list(session.exec(stmt).all())
+    # def find_for_upload(
+    #         self,
+    #         story_ids: List[int]
+    # ) -> List[BizUserStory]:
+    #     """
+    #     第二步：根据 story_ids 直接获取完整的用户故事对象
+    #     前面已经过滤了所有条件，这里直接根据ID获取即可
+    #     """
+    #     with Session(self.db_engine) as session:
+    #         stmt = select(BizUserStory).where(BizUserStory.id.in_(story_ids))
+    #         return list(session.exec(stmt).all())
 
     def find_for_upload1(
             self,
-            itcode: str,
             story_ids: List[int]
     ) -> List[BizUserStory]:
 
@@ -60,34 +59,34 @@ class BizUserStoryDAO(BaseDAO[BizUserStory]):
             return False
 
 
-    def update_jira_id(self, itcode: str) -> dict:
-        """通过查询上传记录表来更新用户故事的 jira_id"""
-        with Session(self.db_engine) as session:
-            stmt = (
-                select(BizJiraUploadRecord.story_id, BizJiraUploadRecord.id)
-                .where(
-                    BizJiraUploadRecord.status == '成功',
-                    BizJiraUploadRecord.create_by == current_itcode.get(),
-                    BizJiraUploadRecord.jira_issue_key.is_not(None)
-                )
-            )
-            success_records = session.exec(stmt).all()
-
-            updated_story_ids = []
-            for story_id, id in success_records:
-                story = session.get(BizUserStory, story_id)
-                if story and story.jira_id is None:
-                    story.jira_id = id
-                    session.add(story)
-                    updated_story_ids.append(story_id)
-
-            session.commit()
-
-            return {
-                'success': len(updated_story_ids) > 0,
-                'message': f"共更新 {len(updated_story_ids)} 条用户故事的 jira_id。",
-                'updated_ids': updated_story_ids
-            }
+    # def update_jira_id(self) -> dict:
+    #     """通过查询上传记录表来更新用户故事的 jira_id"""
+    #     with Session(self.db_engine) as session:
+    #         stmt = (
+    #             select(BizJiraUploadRecord.story_id, BizJiraUploadRecord.id)
+    #             .where(
+    #                 BizJiraUploadRecord.status == '成功',
+    #                 BizJiraUploadRecord.create_by == current_itcode.get(),
+    #                 BizJiraUploadRecord.jira_issue_key.is_not(None)
+    #             )
+    #         )
+    #         success_records = session.exec(stmt).all()
+    #
+    #         updated_story_ids = []
+    #         for story_id, id in success_records:
+    #             story = session.get(BizUserStory, story_id)
+    #             if story and story.jira_id is None:
+    #                 story.jira_id = id
+    #                 session.add(story)
+    #                 updated_story_ids.append(story_id)
+    #
+    #         session.commit()
+    #
+    #         return {
+    #             'success': len(updated_story_ids) > 0,
+    #             'message': f"共更新 {len(updated_story_ids)} 条用户故事的 jira_id。",
+    #             'updated_ids': updated_story_ids
+    #         }
 
     def find_user_story_by_uuid(self,uuid: str) -> Optional[BizUserStory]:
         """获取该卡片最新的内容"""
@@ -115,7 +114,7 @@ class BizUserStoryDAO(BaseDAO[BizUserStory]):
             result = session.exec(stmt).first()
             return result if result is not None else 0
 
-    def find_user_story_by_conversation_id(self, itcode: str, conversation_id: int) -> List[dict]:
+    def find_user_story_by_conversation_id(self,  conversation_id: int) -> List[dict]:
         """
         查询指定会话和用户创建的所有最新版本用户故事
         SQL逻辑：
@@ -164,7 +163,7 @@ class BizUserStoryDAO(BaseDAO[BizUserStory]):
 
             return results
 
-    def find_user_story_by_uuids(self, itcode:str,uuids: List[str]) -> List[BizUserStory]:
+    def find_user_story_by_uuids(self, uuids: List[str]) -> List[BizUserStory]:
         """根据UUID列表查询用户故事（只返回最新版本）"""
         with Session(self.db_engine) as session:
             stmt = (
@@ -178,7 +177,7 @@ class BizUserStoryDAO(BaseDAO[BizUserStory]):
             )
             return list(session.exec(stmt).all())
 
-    def query_user_story_by_conversation_id_and_order(self,conversation_id: int,itcode: str)->List[BizUserStory]:
+    def query_user_story_by_conversation_id_and_order(self,conversation_id: int) ->List[BizUserStory]:
         """根据conversation_id查询最新版本的用户故事列表并且按照order降序返回"""
         with Session(self.db_engine) as session:
             sub_stmt = (

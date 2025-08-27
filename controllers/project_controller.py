@@ -1,6 +1,7 @@
 from services.project_service import ProjectService
 from utils.dependency_injection import controller
 from utils.response_utils import ApiResponse
+from config.context import current_itcode
 
 
 @controller
@@ -11,10 +12,10 @@ class ProjectController:
     def __init__(self):
         pass
 
-    def get_project_id_by_itcode(self,itcode: str)->dict:
+    def get_project_id_by_itcode(self)->dict:
         """获取用户project_id"""
         try:
-            projects = self.project_service.query_project_by_creator(itcode) #TODO: 明天换成shuzhen的接口
+            projects = self.project_service.query_project_by_creator() #TODO: 明天换成shuzhen的接口
             result = self.project_service.get_project_id_return_data(projects)
             return ApiResponse.success(result, "用户项目查询成功")
         except Exception as e:

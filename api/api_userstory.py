@@ -11,7 +11,7 @@ from config.context import current_itcode
 
 
 class AiPromptCreateRequest(BaseModel):
-    itcode: str = Field(..., description="ITCode")
+    itcode: Optional[str] = Field(None, description="ITCode")
     project_key: str = Field(..., description="project维度，和CMDB ID和知识库唯一绑定")
     domain_id: int = Field(..., description="领域ID")
     title: str = Field(..., description="提示词标题")
@@ -30,8 +30,9 @@ class AiPromptCreateRequest(BaseModel):
             }
         }
 
+
 class AiPromptUpdateRequest(BaseModel):
-    itcode: str = Field(..., description="ITCode")
+    itcode: Optional[str] = Field(None, description="ITCode")
     prompt_id: int = Field(..., description="提示词ID")
     title: Optional[str] = Field(None, description="提示词标题")
     content: Optional[str] = Field(None, description="提示词内容")
@@ -47,8 +48,9 @@ class AiPromptUpdateRequest(BaseModel):
             }
         }
 
+
 class AiPromptGetRequest(BaseModel):
-    itcode: str = Field(..., description="ITCode")
+    itcode: Optional[str] = Field(None, description="ITCode")
     prompt_id: int = Field(..., description="提示词ID")
 
     class Config:
@@ -61,7 +63,7 @@ class AiPromptGetRequest(BaseModel):
 
 
 class AiPromptDeleteRequest(BaseModel):
-    itcode: str = Field(..., description="ITCode")
+    itcode: Optional[str] = Field(None, description="ITCode")
     prompt_id: int = Field(..., description="提示词ID")
 
     class Config:
@@ -72,16 +74,16 @@ class AiPromptDeleteRequest(BaseModel):
             }
         }
 
-class ProjectPromptsRequest(BaseModel):
-    itcode: str = Field(..., description="ITCode")
-    project_key: str = Field(..., description="project维度，和CMDB ID和知识库唯一绑定")
+#2025.8.12 这边已经改为从context取itcode维度查询list，为了稳定保留project_key字段
+class PromptsListRequest(BaseModel):
+    itcode: Optional[str] = Field(None, description="ITCode")
+    project_key: Optional[str] = Field(None, description="project维度，和CMDB ID和知识库唯一绑定")
     is_predefined: Optional[bool] = Field(None, description="是否为预定义提示词，默认为False")
     class Config:
         json_schema_extra = {
             "example": {
                 "itcode": "test_user",
-                "project_key": "这是一个project_key",
-                "is_predefined": None  # 是否为预定义提示词，默认为False
+                "is_predefined": "null"  # 是否为预定义提示词，默认为False
             }
         }
 
@@ -142,7 +144,7 @@ class UpdateUserStroyRequest(BaseModel):
         json_schema_extra = {
             "example": {
                 "itcode": "zhangsan",
-                "uuid": 123,
+                "uuid": "123",
                 "jira_summary": "作为用户，我希望…",
                 "jira_description": "用户故事的详细描述",
                 "jira_acceptance_criterta": "1. 功能正常\n2. 满足性能要求",
@@ -219,13 +221,15 @@ class ApiUserStory():
             request: Request
         ):
             """创建AI系统提示词"""
-            if(current_itcode.get() is None):
-                operator = prompt_request.itcode
-            else:
+            if(current_itcode.get()):
                 operator = current_itcode.get()
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="操作人ITCode不能为空"
+                )
             return self.controller.create_ai_prompt(
-                prompt_request.model_dump(),# model_dump()将实例 转为字典
-                operator
+                prompt_request.model_dump()
             )
 
         @router.post("/prompts/get",
@@ -233,20 +237,29 @@ class ApiUserStory():
                     description="通过提示词ID获取AI系统提示词详细信息")
         def get_ai_prompt(prompt_request: AiPromptGetRequest):
             """获取AI系统提示词详情"""
+            if(current_itcode.get()):
+                operator = current_itcode.get()
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="操作人ITCode不能为空"
+                )
             return self.controller.get_ai_prompt(prompt_request.prompt_id)
 
         @router.post("/prompts/list",
                     summary="获取项目提示词列表",
-                    description="根据项目ID获取该项目下的所有提示词列表")
-        def list_prompts_by_project(project_request: ProjectPromptsRequest):
+                    description="根据itcode获取该用户的所有提示词列表")
+        def list_prompts_by_itcode(project_request: PromptsListRequest):
             """根据项目ID获取提示词列表"""
-            if(current_itcode.get() is None):
-                operator = ProjectPromptsRequest.itcode
-            else:
+            if(current_itcode.get()):
                 operator = current_itcode.get()
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="操作人ITCode不能为空"
+                )
             is_predefined = project_request.is_predefined
-            # 这里可以添加权限验证逻辑
-            return self.controller.list_prompts_by_jira_project(project_request.project_key, project_request.is_predefined)
+            return self.controller.list_prompts_by_itcode(operator, project_request.is_predefined)
 
         @router.post("/prompts/predefined",
                     summary="获取预制提示词列表",
@@ -265,8 +278,13 @@ class ApiUserStory():
         ):
 
             """更新AI系统提示词"""
-            operator = current_itcode.get()
-
+            if(current_itcode.get()):
+                operator = current_itcode.get()
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="操作人ITCode不能为空"
+                )
             # 提取prompt_id和更新数据
             prompt_id = prompt_request.prompt_id
 
@@ -322,6 +340,11 @@ class ApiUserStory():
                 operator = AiPromptDeleteRequest.itcode
             else:
                 operator = current_itcode.get()
+            if operator is None:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="操作人ITCode不能为空"
+                )
             return self.controller.delete_ai_prompt(delete_request.prompt_id, operator)
 
         @router.post("/upload-jira",
@@ -332,8 +355,7 @@ class ApiUserStory():
                 request: Request
         ):
             """上传用户故事"""
-            operator = upload_request.itcode
-            return self.controller.upload_to_jira(upload_request.itcode,upload_request.story_ids,upload_request.project_key,upload_request.jira_token)
+            return self.controller.upload_to_jira(upload_request.story_ids,upload_request.project_key,upload_request.jira_token)
 
         @router.post("/update",
                      summary="更新用户编辑的用户故事",
@@ -342,19 +364,12 @@ class ApiUserStory():
                 update_request: UpdateUserStroyRequest,
                 request: Request
         ):
-            if(current_itcode.get() is None):
-                operator = update_request.itcode
-            else:
-                operator = current_itcode.get()
-
             # 将请求中的jira字段转换为story_data字典
             story_data = update_request.to_story_data_dict()
 
             return self.controller.update_user_story(
-                itcode = update_request.itcode,
                 uuid=update_request.uuid,
-                story_data=story_data,
-                operator=operator
+                story_data=story_data
             )
 
         @router.post("/exhibition",
@@ -364,8 +379,7 @@ class ApiUserStory():
                 exhibit_request: ExhibitUserStoryRequest,
                 request: Request
         ):
-            operator = exhibit_request.itcode
-            return self.controller.exhibit_user_story(exhibit_request.itcode, exhibit_request.conversation_id,operator)
+            return self.controller.exhibit_user_story(exhibit_request.conversation_id)
 
         @router.post("/delete",
                      summary="删除选中的用户故事",
@@ -374,8 +388,7 @@ class ApiUserStory():
                 delete_request: DeleteUserStoryRequest,
                 request: Request
         ):
-            operator = delete_request.itcode
-            return self.controller.delete_user_story(delete_request.itcode, delete_request.uuids,operator)
+            return self.controller.delete_user_story( delete_request.uuids)
 
         @router.post("/download",
                      summary="下载选中的用户故事保存为excel文件",
@@ -385,9 +398,7 @@ class ApiUserStory():
                 request: Request
         ):
             file_path, file_name = self.controller.download_user_story(
-                download_request.itcode,
-                download_request.uuids,
-                download_request.itcode
+                download_request.uuids
             )
 
             return FileResponse(

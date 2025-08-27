@@ -6,14 +6,8 @@ extends: base.yaml
 
 # 测试环境特定配置
 application_name: "Haiven-Test"
-knowledge_pack_path: ${KNOWLEDGE_PACK_PATH}
-enabled_providers: ${ENABLED_PROVIDERS}
-
-default_models:
-  chat: ${ENABLED_CHAT_MODEL}
-  vision: ${ENABLED_VISION_MODEL}
-  embeddings: ${ENABLED_EMBEDDINGS_MODEL}
-
+jira_service_url: "http://integration-sit.t-sy-in.earth.xcloud.lenovo.com/api/test/jira/issue"
+test_agent_url: "http://ai-operation-agent-sit.earth-us.xpaas.lenovo.com/api/kmverse/search"
 
 # 数据库配置
 database:
@@ -22,3 +16,26 @@ database:
   db_name: "requirement_agent"
   db_account: "a_appconnect"
   db_password: "Snc0VBlf2@Qy"
+
+# APIH配置
+apih:
+  auth_url: "https://apihub-test.lenovo.com/token"
+  account: "api_itagent_rq"
+  client_id: "CU7re5hP7RkCs2eUF6ZROg7quBl7QJka"
+  client_secret: "P_U6pzx3a3"
+
+# KMVERSE配置
+kmverse:
+  base_url: "https://apihub-test.lenovo.com/uat/v2/product/tpass"
+  kmverse_key: "/82hgNJsIKB3glxxO6PKnUbC2eIuMLKLLAfGAHpgdjk="
+  function_path:
+    retrieval: "/tpass/kmverse/outerapi/v1/knowledge/retrieval"
+
+# 提示词配置
+prompt_id:
+  judge_user_scenarios_prompt_id: 2
+  divide_user_story_prompt_id: 3
+  again_divide_user_story_prompt_id: 4
+  update_user_story_prompt_id: 6
+  summary_prompt_id: 5
+  user_story_summary_prompt_id: 7

@@ -6,15 +6,8 @@ extends: base.yaml
 
 # 开发环境特定配置
 application_name: "Haiven-Dev"
-knowledge_pack_path: ${KNOWLEDGE_PACK_PATH}
-enabled_providers: ${ENABLED_PROVIDERS}
 jira_service_url: "http://integration-sit.t-sy-in.earth.xcloud.lenovo.com/api/test/jira/issue"
-
-default_models:
-  chat: ${ENABLED_CHAT_MODEL}
-  vision: ${ENABLED_VISION_MODEL}
-  embeddings: ${ENABLED_EMBEDDINGS_MODEL}
-
+test_agent_url: "http://ai-operation-agent-sit.earth-us.xpaas.lenovo.com/api/kmverse/search"
 
 # 数据库配置
 database:
@@ -24,12 +17,55 @@ database:
   db_account: "a_appconnect"
   db_password: "z:yMZF4CjkV6"
 
+# APIH配置
+apih:
+  auth_url: "https://apihub-test.lenovo.com/token"
+  account: "api_itagent_rq"
+  client_id: "CU7re5hP7RkCs2eUF6ZROg7quBl7QJka"
+  client_secret: "P_U6pzx3a3"
+
+# KMVERSE配置
+kmverse:
+  base_url: "https://apihub-test.lenovo.com/uat/v2/product/tpass"
+  kmverse_key: "/82hgNJsIKB3glxxO6PKnUbC2eIuMLKLLAfGAHpgdjk="
+  function_path:
+    retrieval: "/tpass/kmverse/outerapi/v1/knowledge/retrieval"
+
 # 提示词配置
 prompt_id:
-  judge_user_scenarios_prompt_id: 5 # 意图识别提示词
-  divide_user_story_prompt_id: 51  # 分解用户故事提示词
-  again_divide_user_story_prompt_id: 54 # 再次分解用户故事
-  summary_prompt_id: 9 # 总结用户query的系统提示词
-  update_user_story_prompt_id: 55 # 修改用户故事
-  system_prompt_id: 45  # 系统提示词
-  user_story_summary_prompt_id: 66
+  summary_prompt_id: "## 任务
+你需要对用户需求进行功能性的简短总结（控制在15个字以内）
+
+## 用户需求 
+{user_input}
+
+## 输出格式 
+只输出总结的内容
+
+示例 1：
+编写供应商绩效评估用户故事
+
+示例 2：
+判断行为类别"
+  user_story_summary_prompt_id: "## 任务
+你需要根据用户输入的用户故事，给出关于这组用户故事的整体功能性简短总结
+
+## 输出内容要求
+从实际使用角度给出整体功能性的总结
+只输出描述功能相关的文字
+
+## 用户输入 
+{user_input}
+
+## 输出格式 
+只输出关于这组用户故事的整体功能性简短总结（不要分段）
+
+示例 1：
+系统新增了打分卡分数变更记录功能，包括记录所有导致打分卡分数变动的操作、设计变更记录表、实现变更记录触发机制、开发变更记录报表以及实施相应的权限控制。此外，还优化了数据展示以提高用户体验。这些功能的实现确保了打分卡分数变动的透明度，便于审计和追溯，并保障了数据的安全性和合规性。
+"
+
+# AI VERSE配置
+ai_verse:
+  model_name: "Qwen3-32B"
+  api_base: "https://ai.ludp.lenovo.com/ics-apps/projects/115/qwen3-dev/aiverse/endpoint/v1"
+  api_key: "sk-G8sqcwdyefe16ZJrVD6U8Z"

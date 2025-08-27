@@ -24,8 +24,7 @@ class RqServer:
 
     def __init__(self, config_service: ConfigService):
         self.config_service = config_service
-        setup_dependency_injection(config_service.db_engine) #初始化容器，完成 service、repository、controller注入
-
+        setup_dependency_injection(config_service.db_engine)
 
     def _log_request_info(self, request: Request, body: bytes):
         """记录请求信息为单行日志"""
@@ -34,9 +33,8 @@ class RqServer:
             from urllib.parse import parse_qs
 
             # 基本信息
-            method = request.method #获取请求方法
-            url = str(request.url) #请求url
-            # 根据 request.headers #表头信息 获取内容
+            method = request.method
+            url = str(request.url)
             content_type = request.headers.get("content-type", "").lower()
 
             # 处理请求体
@@ -118,7 +116,7 @@ class RqServer:
 
 
     def create(self):
-        app = FastAPI(docs_url=None, redoc_url=None)# 禁用默认文档
+        app = FastAPI(docs_url=None, redoc_url=None)
 
         self.add_middleware(app)
         self.add_endpoints(app)

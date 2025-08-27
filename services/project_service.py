@@ -12,9 +12,9 @@ class ProjectService:
     def __init__(self):
         pass
 
-    def query_project_by_creator(self,creator: str)->List[BizJiraProject]:
+    def query_project_by_creator(self)->List[BizJiraProject]:
         """根据创始人查询project"""
-        return self.project_dao.find_by_creator(creator)
+        return self.project_dao.find_by_creator()
 
     def get_project_id_return_data(self,projects: List[BizJiraProject])->dict:
         """返回根据itcode查询project的前端数据"""

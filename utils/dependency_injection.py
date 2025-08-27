@@ -8,12 +8,12 @@ class DIContainer:
     """依赖注入容器 - 两阶段初始化单例模式"""
 
     _instance = None
-    _db_engine = None # 数据库
+    _db_engine = None
     _registered_classes: Set[Type] = set()  # 已注册的类
     _bean_instances: Dict[Type, Any] = {}  # 类到实例的直接映射
     _initialized: bool = False  # 是否已经完成依赖注入初始化
 
-    def __new__(cls): # 实现单例模式，确保一个类只有一个实例。
+    def __new__(cls):
         if cls._instance is None:
             cls._instance = super(DIContainer, cls).__new__(cls)
             cls._registered_classes = set()
@@ -31,10 +31,10 @@ class DIContainer:
         return cls._instance
 
     def _initialize_beans(self):
-        """ 两阶段初始化：先创建所有bean，再注入依赖 """
+        """两阶段初始化：先创建所有bean，再注入依赖"""
         if self._initialized:
             return
-        
+
         # 阶段一：创建所有注册类的实例
         HaivenLogger.get().info("DI containder: bean initialization phase 1: creating all Bean instances")
         for bean_class in self._registered_classes:
@@ -50,11 +50,11 @@ class DIContainer:
 
     def _create_bean_instance(self, bean_class: Type) -> Any:
         """创建bean实例，但不注入依赖"""
-        if bean_class in self._bean_instances: # 已注册，直接返回
+        if bean_class in self._bean_instances:
             return self._bean_instances[bean_class]
 
         # 创建实例
-        try: # hasattr(object, name) 检测 object是否含有name属性
+        try:
             if hasattr(bean_class, "__subclasses__") and issubclass(bean_class, BaseDAO):
                 # DAO需要db_engine参数
                 instance = bean_class(self._db_engine)
@@ -71,7 +71,7 @@ class DIContainer:
 
     def _inject_dependencies(self, instance):
         """为实例注入依赖"""
-        # 获取类的类型注解，（如：service: UserService）
+        # 获取类的类型注解
         type_hints = get_type_hints(type(instance))
 
         for attr_name, dependency_type in type_hints.items():
@@ -79,7 +79,7 @@ class DIContainer:
             if attr_name.startswith('_') or attr_name in ['return']:
                 continue
 
-            # 检查是否已经有值，getattr(instance, attr_name) 获取instance.attr_name的值
+            # 检查是否已经有值
             if hasattr(instance, attr_name) and getattr(instance, attr_name) is not None:
                 continue
 

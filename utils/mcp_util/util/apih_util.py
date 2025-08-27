@@ -8,6 +8,7 @@ config = {
             "client_secret": "H=c3p4wD=L"
         }
 
+# @DeprecationWarning("请使用utils文件夹下的apih_util.py")
 class ApihUtil:
     tokenMap = {}
 

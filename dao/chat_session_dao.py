@@ -8,11 +8,10 @@ from utils.dependency_injection import repository
 
 @repository
 class AiChatSessionDAO(BaseDAO[AiChatSession]):
-    """AI会话DAO,继承BaseDAO，专门用于处理 AiChatSession"""
+    """AI会话DAO"""
 
     def __init__(self, db_engine):
         super().__init__(db_engine, AiChatSession)
-        # 调用BaseDAO，传入engine、model_class
 
     def query_chat_by_session_id(self,session_id: str)->Optional[AiChatSession]:
         """根据session_id查询历史会话"""
@@ -23,7 +22,7 @@ class AiChatSessionDAO(BaseDAO[AiChatSession]):
             )
             return session.exec(statement).first()
 
-    def query_chat_by_creator_and_project_key(self,itcode: str,project_key: str)->List[AiChatSession]:
+    def query_chat_by_creator_and_project_key(self,project_key: str)->List[AiChatSession]:
         """根据creator以及project_key查询历史会话"""
         with Session(self.db_engine) as session:
             statement = select(AiChatSession).where(
